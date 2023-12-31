@@ -1,0 +1,237 @@
+import 'package:flutter/material.dart';
+
+
+
+void main() {
+  runApp(const Calculator());
+}
+
+class Calculator extends StatelessWidget {
+  const Calculator({super.key});
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Simple Calculator',
+      theme: ThemeData.dark(),
+      home: const CalculatorScreen(),
+    );
+  }
+}
+
+class CalculatorScreen extends StatefulWidget {
+  const CalculatorScreen({super.key});
+
+
+  @override
+  _CalculatorScreenState createState() => _CalculatorScreenState();
+}
+
+class _CalculatorScreenState extends State<CalculatorScreen> {
+
+  String _output='0';
+  String _currentInput="0";
+  String _operator="";
+  double _result=0;
+  bool _isOperatorClicked=false;
+  
+  
+  void _onNumberClick(String value){
+    setState(() {
+      if (_isOperatorClicked){
+        _currentInput=value;
+        _isOperatorClicked=false;
+      }else{
+        _currentInput+=value;
+      }
+      _output=_currentInput;
+    });
+  
+  }
+  
+  void _onOperatorClick(String value){
+    setState(() {
+      if (_operator.isNotEmpty){
+        _calculate();
+        _operator=value;
+        _isOperatorClicked=true;
+        
+        
+      }else{
+        _result=double.parse(_currentInput);
+        _operator=value;
+        _isOperatorClicked=true;
+      }
+    });
+  }
+  void _onEqualClick(){
+    setState(() {
+      _calculate();
+      _operator="";
+    });
+  }
+  void _onClearClick(){
+    setState(() {
+      _currentInput="";
+      _output="0";
+      _result=0;
+      _operator="";
+      _isOperatorClicked=false;
+    });
+  }
+  void _calculate(){
+    double currentInput=double.parse(_currentInput);
+    
+    switch(_operator){
+      case "+":
+        _result+=currentInput;
+        break;
+      case "-":
+        _result-=currentInput;
+        break;  
+      case "*":
+        _result*=currentInput;
+        break;
+      case "/":
+        if(currentInput!=0){
+          _result/=currentInput;
+        }else{
+          _output="error";
+          return;
+        }
+        break;
+    }
+    _output=_result.toString();
+    _currentInput=_output;
+  
+  
+  }
+  
+  Widget buildButton(String Text,double buttonHeight,Color buttonColor){
+    return Expanded(
+      child:ElevatedButton(
+        onPressed: (){
+          if (Text=="="){
+            _onEqualClick();
+          }else if(Text=="DEL"){
+            _onClearClick();
+          }else if(Text=="+" || Text=="-" || Text=="*" || Text=="/"){
+            _onOperatorClick(Text);
+          }else{
+            _onNumberClick(Text);
+          }
+        },
+        child:Text(Text,style: const TextStyle(
+               fontSize: 30.0,
+               fontWeight: FontWeight.normal,
+               color: Colors.white,
+            ),
+      ),
+      )
+    );
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(title: const Text('Simple Calculator')),
+        body:Column(
+          children:[
+          Container(
+            alignment: Alignment.centerRight,
+            padding: const EdgeInsets.fromLTRB(10,20,10,0),
+            child:const
+
+
+
+            Text(_output,style:TextStyle(fontSize:32),
+            ),
+        ),
+
+        Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: MediaQuery.of(context).size.width*.75,
+                child: Table(
+                  children: [
+                    TableRow(
+                      children:[
+                        buildButton("C",1,Colors.redAccent),
+                        buildButton("DEL",1,Colors.blue),
+                        buildButton("/",1,Colors.blue),
+                       ]
+                    ),
+
+                    TableRow(
+                        children:[
+                          buildButton("7",1,Colors.black54),
+                          buildButton("8",1,Colors.black54),
+                          buildButton("9",1,Colors.black54),
+                        ]
+                    ),
+                    TableRow(
+                        children:[
+                          buildButton("4",1,Colors.black54),
+                          buildButton("5",1,Colors.black54),
+                          buildButton("6",1,Colors.black54),
+                        ]
+                    ),
+                    TableRow(
+                        children:[
+                          buildButton("1",1,Colors.black54),
+                          buildButton("2",1,Colors.black54),
+                          buildButton("3",1,Colors.black54),
+                        ]
+                    ),
+                    TableRow(
+                        children:[
+                          buildButton(".",1,Colors.black54),
+                          buildButton("0",1,Colors.black54),
+                          buildButton("00",1,Colors.black54),
+                        ]
+                    ),
+                    ],
+                ),
+              ),
+
+              SizedBox(
+                width: MediaQuery.of(context).size.width*0.25,
+                child: Table(
+                  children: [
+                    TableRow(
+                      children: [
+                        buildButton("*", 1, Colors.blue),
+                        ]
+                     ),
+                    TableRow(
+                      children: [
+                         buildButton("-", 1, Colors.blue),
+                      ]
+                      ),
+                    TableRow(
+                      children: [
+                         buildButton("+", 1, Colors.blue),
+                           ]
+                           ),
+                    TableRow(
+                      children: [
+                          buildButton("=", 2, Colors.blue),
+                            ]
+                         ),
+
+
+                      ],
+                    )
+                    ),
+  ],
+              )
+
+
+
+    ]
+    ),
+    );
+}
